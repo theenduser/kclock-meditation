@@ -81,6 +81,21 @@ Kirigami.Page {
         audioOutput: AudioOutput {}
     }
 
+    // inaudible keep-alive so the Bluetooth speaker doesn't switch itself off
+    MediaPlayer {
+        id: keepAlive
+        source: Qt.resolvedUrl("keepalive.wav")
+        audioOutput: AudioOutput {}
+    }
+
+    Timer {
+        interval: 10 * 60 * 1000
+        repeat: true
+        running: root.phase !== "idle"
+        triggeredOnStart: true
+        onTriggered: { keepAlive.stop(); keepAlive.play(); }
+    }
+
     Timer {
         id: ringer
         interval: 5000
