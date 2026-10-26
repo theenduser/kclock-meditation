@@ -1,4 +1,5 @@
 import QtQuick
+import QtCore
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import QtMultimedia
@@ -17,6 +18,13 @@ Kirigami.Page {
 
     property bool useFirstPlayer: true
     property int ringsLeft: 0
+
+    // remembers prep time and session length between runs
+    Settings {
+        category: "Meditation"
+        property alias prep: prepBox.value
+        property alias length: lengthBox.value
+    }
 
     function fmt(s) {
         const m = Math.floor(s / 60), r = s % 60;
