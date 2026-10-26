@@ -113,6 +113,9 @@ ecm_add_qml_module(kclock URI org.kde.kclock QML_FILES
     qml/time/AnalogClockHand.qml
     qml/time/TimePage.qml
     qml/time/TimePageDelegate.qml
+
+    RESOURCES
+    qml/meditation/bell.wav
 )
 
 qt6_generate_wayland_protocol_client_sources(kclock

@@ -15,15 +15,30 @@ Kirigami.Page {
     property double nextInterval: 0
     property int remaining: 0
 
+    property bool useFirstPlayer: true
+    property int ringsLeft: 0
+
     function fmt(s) {
         const m = Math.floor(s / 60), r = s % 60;
         return m + ":" + (r < 10 ? "0" : "") + r;
     }
 
-    function ring() {
-        bell.stop();
-        bell.position = 0;
-        bell.play();
+    // play one strike, using the two players in turn so strikes can overlap
+    function playOnce() {
+        const p = useFirstPlayer ? bellA : bellB;
+        useFirstPlayer = !useFirstPlayer;
+        p.stop();
+        p.play();
+    }
+
+    // strike `count` times, 5 seconds apart
+    function ring(count) {
+        playOnce();
+        ringsLeft = count - 1;
+        if (ringsLeft > 0)
+            ringer.restart();
+        else
+            ringer.stop();
     }
 
     function start() {
@@ -32,15 +47,42 @@ Kirigami.Page {
         tick.start();
     }
 
+    // Stop button: silence everything
     function stop() {
         tick.stop();
+        ringer.stop();
         phase = "idle";
     }
 
+    // session ran to the end: 2 closing strikes
+    function finish() {
+        tick.stop();
+        phase = "idle";
+        ring(2);
+    }
+
     MediaPlayer {
-        id: bell
-        source: "file:///usr/share/sounds/freedesktop/stereo/complete.oga"
+        id: bellA
+        source: Qt.resolvedUrl("bell.wav")
         audioOutput: AudioOutput {}
+    }
+
+    MediaPlayer {
+        id: bellB
+        source: Qt.resolvedUrl("bell.wav")
+        audioOutput: AudioOutput {}
+    }
+
+    Timer {
+        id: ringer
+        interval: 5000
+        repeat: true
+        onTriggered: {
+            root.playOnce();
+            root.ringsLeft--;
+            if (root.ringsLeft <= 0)
+                ringer.stop();
+        }
     }
 
     Timer {
@@ -53,17 +95,16 @@ Kirigami.Page {
                 root.remaining = Math.max(0, Math.ceil((root.phaseEnd - now) / 1000));
                 if (now >= root.phaseEnd) {
                     root.phase = "running";
-                    root.ring();
+                    root.ring(3);
                     root.sessionEnd = now + lengthBox.value * 60000;
                     root.nextInterval = intervalBox.value > 0 ? now + intervalBox.value * 60000 : 0;
                 }
             } else if (root.phase === "running") {
                 root.remaining = Math.max(0, Math.ceil((root.sessionEnd - now) / 1000));
                 if (now >= root.sessionEnd) {
-                    root.ring();
-                    root.stop();
+                    root.finish();
                 } else if (root.nextInterval > 0 && now >= root.nextInterval && root.nextInterval < root.sessionEnd) {
-                    root.ring();
+                    root.ring(1);
                     root.nextInterval += intervalBox.value * 60000;
                 }
             }
