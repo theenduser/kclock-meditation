@@ -114,6 +114,17 @@ Kirigami.NavigationTabBar {
             }
         },
         Kirigami.Action {
+            icon.name: "face-smile"
+            text: i18n("Meditation")
+            checked: root.pageStack.currentItem?.objectName === "Meditation"
+            onTriggered: {
+                if (root.pageStack.currentItem?.objectName !== "Meditation") {
+                    const page = applicationWindow().getPage("Meditation");
+                    applicationWindow().switchToPage(page, 0);
+                }
+            }
+        },
+        Kirigami.Action {
             icon.name: "notifications"
             text: i18n("Alarms")
             checked: root.pageStack.currentItem?.objectName === "Alarms"

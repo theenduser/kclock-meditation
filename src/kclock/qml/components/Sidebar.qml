@@ -99,6 +99,19 @@ Kirigami.OverlayDrawer {
 
                 Kirigami.NavigationTabButton {
                     Layout.fillWidth: true
+                    text: i18n("Meditation")
+                    icon.name: "face-smile"
+                    checked: pageStack.currentItem?.objectName === "Meditation"
+                    onClicked: {
+                        if (pageStack.currentItem?.objectName !== "Meditation") {
+                            const page = applicationWindow().getPage("Meditation");
+                            applicationWindow().switchToPage(page, 0);
+                        }
+                    }
+                }
+
+                Kirigami.NavigationTabButton {
+                    Layout.fillWidth: true
                     text: i18n("Alarms")
                     icon.name: "notifications"
                     checked: pageStack.currentItem?.objectName === "Alarms"

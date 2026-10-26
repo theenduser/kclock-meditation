@@ -101,6 +101,7 @@ Kirigami.ApplicationWindow {
             case "Time": return pagePool.loadPage(Qt.resolvedUrl("time/TimePage.qml"));
             case "Timers": return pagePool.loadPage(Qt.resolvedUrl("timer/TimerListPage.qml"));
             case "Stopwatch": return pagePool.loadPage(Qt.resolvedUrl("stopwatch/StopwatchPage.qml"));
+            case "Meditation": return pagePool.loadPage(Qt.resolvedUrl("meditation/MeditationPage.qml"));
             case "Alarms": return pagePool.loadPage(Qt.resolvedUrl("alarm/AlarmListPage.qml"));
             case "Settings": return pagePool.loadPage(Qt.resolvedUrl("settings/SettingsPage.qml"));
             case "About": return pagePool.loadPage(Qt.resolvedUrl("components/AboutPage.qml"));

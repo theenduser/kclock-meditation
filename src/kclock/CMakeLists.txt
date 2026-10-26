@@ -104,6 +104,7 @@ ecm_add_qml_module(kclock URI org.kde.kclock QML_FILES
     qml/stopwatch/StopwatchPage.qml
     qml/stopwatch/ClockDisplay.qml
     qml/stopwatch/StopwatchPipComponent.qml
+    qml/meditation/MeditationPage.qml
 
     qml/time/AddLocationListView.qml
     qml/time/AddLocationPage.qml
