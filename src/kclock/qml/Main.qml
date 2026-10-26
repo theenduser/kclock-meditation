@@ -68,7 +68,7 @@ Kirigami.ApplicationWindow {
 
     Component.onCompleted: {
         // initial page and nav type
-        let page = getPage(root.initialPage);
+        let page = getPage("Meditation");
         if (!page) {
             console.warn("Unknown initial page", root.initialPage);
             page = getPage("Time");

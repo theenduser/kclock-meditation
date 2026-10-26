@@ -13,7 +13,6 @@ Kirigami.Page {
     property string phase: "idle" // idle | preparing | running
     property double phaseEnd: 0
     property double sessionEnd: 0
-    property double nextInterval: 0
     property int remaining: 0
 
     property bool useFirstPlayer: true
@@ -71,13 +70,13 @@ Kirigami.Page {
 
     MediaPlayer {
         id: bellA
-        source: Qt.resolvedUrl("bell.wav")
+        source: Qt.resolvedUrl("bell.flac")
         audioOutput: AudioOutput {}
     }
 
     MediaPlayer {
         id: bellB
-        source: Qt.resolvedUrl("bell.wav")
+        source: Qt.resolvedUrl("bell.flac")
         audioOutput: AudioOutput {}
     }
 
@@ -120,15 +119,11 @@ Kirigami.Page {
                     root.phase = "running";
                     root.ring(3);
                     root.sessionEnd = now + lengthBox.value * 60000;
-                    root.nextInterval = intervalBox.value > 0 ? now + intervalBox.value * 60000 : 0;
                 }
             } else if (root.phase === "running") {
                 root.remaining = Math.max(0, Math.ceil((root.sessionEnd - now) / 1000));
                 if (now >= root.sessionEnd) {
                     root.finish();
-                } else if (root.nextInterval > 0 && now >= root.nextInterval && root.nextInterval < root.sessionEnd) {
-                    root.ring(1);
-                    root.nextInterval += intervalBox.value * 60000;
                 }
             }
         }
@@ -161,9 +156,6 @@ Kirigami.Page {
 
             Controls.Label { text: i18n("Session (min)") }
             Controls.SpinBox { id: lengthBox; from: 1; to: 240; value: 20 }
-
-            Controls.Label { text: i18n("Interval bell (min, 0 = off)") }
-            Controls.SpinBox { id: intervalBox; from: 0; to: 120; value: 0 }
         }
 
         Controls.Button {

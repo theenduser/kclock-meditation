@@ -115,7 +115,7 @@ ecm_add_qml_module(kclock URI org.kde.kclock QML_FILES
     qml/time/TimePageDelegate.qml
 
     RESOURCES
-    qml/meditation/bell.wav
+    qml/meditation/bell.flac
     qml/meditation/keepalive.wav
 )
 
