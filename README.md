@@ -1,3 +1,29 @@
+# KClock Meditation
+
+A fork of [KClock](https://invent.kde.org/utilities/kclock), KDE's clock app, with a **Meditation** page added:
+
+- a preparation delay, then a session timer
+- a singing bowl that strikes 3 times at the start and 2 times at the end
+- remembers your preparation time and session length
+- follows the system's default audio output, so a Bluetooth speaker connected later works
+- plays an inaudible tone every 10 minutes so a Bluetooth speaker doesn't switch itself off
+
+Built and tested on Debian testing with KDE Plasma 6 on Wayland.
+
+## Build
+
+Install KClock's build dependencies (for example with `sudo apt build-dep kclock`), plus `qml6-module-qtmultimedia` and `qml6-module-qtcore`. Then:
+
+    cmake -B build -G Ninja
+    cmake --build build
+    ./build/bin/kclock
+
+## License and credits
+
+KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The singing bowl recording is CC0 (public domain).
+
+---
+
 <!--
 - Copyright 2020 Han Young <hanyoung@protonmail.com>
 - Copyright 2020 Devin Lin <espidev@gmail.com>
