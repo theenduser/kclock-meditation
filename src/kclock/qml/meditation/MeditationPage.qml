@@ -68,23 +68,26 @@ Kirigami.Page {
         ring(2);
     }
 
+    // follows the system default audio output (e.g. a newly connected speaker)
+    MediaDevices { id: mediaDevices }
+
     MediaPlayer {
         id: bellA
         source: Qt.resolvedUrl("bell.flac")
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     MediaPlayer {
         id: bellB
         source: Qt.resolvedUrl("bell.flac")
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     // inaudible keep-alive so the Bluetooth speaker doesn't switch itself off
     MediaPlayer {
         id: keepAlive
         source: Qt.resolvedUrl("keepalive.wav")
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     Timer {
