@@ -1,5 +1,7 @@
 # KClock Meditation
 
+![The Meditation page](docs/screenshot.png)
+
 A fork of [KClock](https://invent.kde.org/utilities/kclock), KDE's clock app, with a **Meditation** page added:
 
 - a preparation delay, then a session timer
