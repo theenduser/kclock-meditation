@@ -22,6 +22,8 @@ Install KClock's build dependencies (for example with `sudo apt build-dep kclock
 
 KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The singing bowl recording is CC0 (public domain).
 
+The Meditation page was created by Stijn, together with Claude, an AI assistant made by Anthropic.
+
 ---
 
 <!--
