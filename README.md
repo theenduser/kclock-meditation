@@ -1,6 +1,6 @@
 # KClock Meditation
 
-![The Meditation page](docs/screenshot.png)
+<img src="docs/screenshot.png" alt="The Meditation page" width="450">
 
 A fork of [KClock](https://invent.kde.org/utilities/kclock), KDE's clock app, with a **Meditation** page added:
 
