@@ -38,7 +38,7 @@ Kirigami.Page {
         p.play();
     }
 
-    // strike `count` times, 5 seconds apart
+    // strike `count` times, 6 seconds apart
     function ring(count) {
         playOnce();
         ringsLeft = count - 1;
@@ -97,7 +97,7 @@ Kirigami.Page {
 
     Timer {
         id: ringer
-        interval: 5000
+        interval: 6000
         repeat: true
         onTriggered: {
             root.playOnce();
@@ -144,6 +144,21 @@ Kirigami.Page {
             Layout.alignment: Qt.AlignHCenter
             visible: root.phase === "preparing"
             text: i18n("Get ready…")
+        }
+
+        GridLayout {
+            Layout.alignment: Qt.AlignHCenter
+            columns: 3
+            enabled: root.phase === "idle"
+
+            Repeater {
+                model: [15, 20, 25]
+                Controls.Button {
+                    Layout.fillWidth: true
+                    text: i18n("%1 min", modelData)
+                    onClicked: lengthBox.value = modelData
+                }
+            }
         }
 
         GridLayout {

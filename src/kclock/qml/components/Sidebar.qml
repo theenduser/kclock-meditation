@@ -100,7 +100,7 @@ Kirigami.OverlayDrawer {
                 Kirigami.NavigationTabButton {
                     Layout.fillWidth: true
                     text: i18n("Meditation")
-                    icon.name: "face-smile"
+            icon.source: Qt.resolvedUrl("../meditation/relaxed.png")
                     checked: pageStack.currentItem?.objectName === "Meditation"
                     onClicked: {
                         if (pageStack.currentItem?.objectName !== "Meditation") {

@@ -114,8 +114,8 @@ Kirigami.NavigationTabBar {
             }
         },
         Kirigami.Action {
-            icon.name: "face-smile"
             text: i18n("Meditation")
+            icon.source: Qt.resolvedUrl("../meditation/relaxed.png")
             checked: root.pageStack.currentItem?.objectName === "Meditation"
             onTriggered: {
                 if (root.pageStack.currentItem?.objectName !== "Meditation") {
