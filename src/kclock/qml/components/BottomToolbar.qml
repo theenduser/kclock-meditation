@@ -114,7 +114,7 @@ Kirigami.NavigationTabBar {
             }
         },
         Kirigami.Action {
-            text: i18n("Meditation")
+            text: i18n("Meditate")
             icon.source: Qt.resolvedUrl("../meditation/relaxed.png")
             checked: root.pageStack.currentItem?.objectName === "Meditation"
             onTriggered: {

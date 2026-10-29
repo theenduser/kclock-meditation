@@ -8,12 +8,13 @@ import org.kde.kirigami as Kirigami
 Kirigami.Page {
     id: root
     objectName: "Meditation"
-    title: i18n("Meditation")
+    title: i18n("Meditate")
 
     property string phase: "idle" // idle | preparing | running
     property double phaseEnd: 0
     property double sessionEnd: 0
     property int remaining: 0
+    property int sessionMinutes: 20
 
     property bool useFirstPlayer: true
     property int ringsLeft: 0
@@ -22,7 +23,7 @@ Kirigami.Page {
     Settings {
         category: "Meditation"
         property alias prep: prepBox.value
-        property alias length: lengthBox.value
+        property alias length: root.sessionMinutes
     }
 
     function fmt(s) {
@@ -121,7 +122,7 @@ Kirigami.Page {
                 if (now >= root.phaseEnd) {
                     root.phase = "running";
                     root.ring(3);
-                    root.sessionEnd = now + lengthBox.value * 60000;
+                    root.sessionEnd = now + root.sessionMinutes * 60000;
                 }
             } else if (root.phase === "running") {
                 root.remaining = Math.max(0, Math.ceil((root.sessionEnd - now) / 1000));
@@ -140,7 +141,7 @@ Kirigami.Page {
             Layout.alignment: Qt.AlignHCenter
             level: 1
             font.pointSize: 48
-            text: root.phase === "idle" ? root.fmt(lengthBox.value * 60) : root.fmt(root.remaining)
+            text: root.phase === "idle" ? root.fmt(root.sessionMinutes * 60) : root.fmt(root.remaining)
         }
 
         Controls.Label {
@@ -159,7 +160,7 @@ Kirigami.Page {
                 Controls.Button {
                     Layout.fillWidth: true
                     text: i18n("%1 min", modelData)
-                    onClicked: lengthBox.value = modelData
+                    onClicked: root.sessionMinutes = modelData
                 }
             }
         }
@@ -169,17 +170,14 @@ Kirigami.Page {
             columns: 2
             enabled: root.phase === "idle"
 
-            Controls.Label { text: i18n("Preparation (s)") }
+            Controls.Label { text: i18n("Prep time (s)") }
             Controls.SpinBox { id: prepBox; from: 0; to: 120; value: 10 }
-
-            Controls.Label { text: i18n("Session (min)") }
-            Controls.SpinBox { id: lengthBox; from: 1; to: 240; value: 20 }
         }
 
         Controls.Button {
             Layout.alignment: Qt.AlignHCenter
             icon.name: root.phase === "idle" ? "media-playback-start" : "media-playback-stop"
-            text: root.phase === "idle" ? i18n("Sit") : i18n("Stop")
+            text: root.phase === "idle" ? i18n("Just sit!") : i18n("Stop")
             onClicked: root.phase === "idle" ? root.start() : root.stop()
         }
     }
