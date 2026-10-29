@@ -179,7 +179,7 @@ Kirigami.Page {
         Controls.Button {
             Layout.alignment: Qt.AlignHCenter
             icon.name: root.phase === "idle" ? "media-playback-start" : "media-playback-stop"
-            text: root.phase === "idle" ? i18n("Start") : i18n("Stop")
+            text: root.phase === "idle" ? i18n("Sit") : i18n("Stop")
             onClicked: root.phase === "idle" ? root.start() : root.stop()
         }
     }
