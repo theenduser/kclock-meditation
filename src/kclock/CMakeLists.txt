@@ -118,6 +118,7 @@ ecm_add_qml_module(kclock URI org.kde.kclock QML_FILES
     qml/meditation/bell.flac
     qml/meditation/keepalive.wav
     qml/meditation/relaxed.png
+    qml/meditation/enso.png
 )
 
 qt6_generate_wayland_protocol_client_sources(kclock
