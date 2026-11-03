@@ -209,7 +209,8 @@ Kirigami.Page {
 
         Controls.Label {
             Layout.alignment: Qt.AlignHCenter
-            visible: root.phase === "preparing"
+            opacity: root.phase === "preparing" ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 400 } }
             text: i18n("Get ready…")
         }
 
