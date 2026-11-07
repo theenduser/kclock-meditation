@@ -116,7 +116,7 @@ ecm_add_qml_module(kclock URI org.kde.kclock QML_FILES
 
     RESOURCES
     qml/meditation/bell.flac
-    qml/meditation/keepalive.wav
+    qml/meditation/wake.wav
     qml/meditation/relaxed.png
     qml/meditation/enso.png
 )

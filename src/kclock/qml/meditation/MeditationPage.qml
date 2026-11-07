@@ -28,7 +28,6 @@ Kirigami.Page {
 
     property bool useFirstPlayer: true
     property int ringsLeft: 0
-    property bool wakeSent: false
 
     // used by the page-switch animation in Main.qml
     property real yTranslate: 0
@@ -64,9 +63,9 @@ Kirigami.Page {
     }
 
     function start() {
+        wakeSent = false;
         fade = 0;
         done = false;
-        wakeSent = false;
         phase = "preparing";
         remaining = prepBox.value;
         phaseEnd = Date.now() + prepBox.value * 1000;
@@ -105,19 +104,13 @@ Kirigami.Page {
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
-    // inaudible keep-alive so the Bluetooth speaker doesn't switch itself off
-    MediaPlayer {
-        id: keepAlive
-        source: Qt.resolvedUrl("keepalive.wav")
-        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
-    }
+    // a near-silent sound wakes the audio output 1.5 s before the first strike
+    property bool wakeSent: false
 
-    Timer {
-        interval: 10 * 60 * 1000
-        repeat: true
-        running: root.phase !== "idle"
-        triggeredOnStart: true
-        onTriggered: { keepAlive.stop(); keepAlive.play(); }
+    MediaPlayer {
+        id: wake
+        source: Qt.resolvedUrl("wake.wav")
+        audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     Timer {
@@ -148,8 +141,14 @@ Kirigami.Page {
             const now = Date.now();
             if (root.phase === "preparing") {
                 root.remaining = Math.max(0, Math.ceil((root.phaseEnd - now) / 1000));
+                if (!root.wakeSent && now >= root.phaseEnd - 1500) {
+                    root.wakeSent = true;
+                    wake.stop();
+                    wake.play();
+                }
                 if (now >= root.phaseEnd) {
                     root.phase = "running";
+                    root.wakeSent = false;
                     root.ring(3);
                     root.sessionStart = now;
                     root.sessionEnd = now + root.sessionMinutes * 60000;
@@ -157,10 +156,10 @@ Kirigami.Page {
                 }
             } else if (root.phase === "running") {
                 root.remaining = Math.max(0, Math.ceil((root.sessionEnd - now) / 1000));
-                if (!root.wakeSent && root.remaining <= 4) {
+                if (!root.wakeSent && now >= root.sessionEnd - 1500) {
                     root.wakeSent = true;
-                    keepAlive.stop();
-                    keepAlive.play();   // wake the speaker just before the closing bell
+                    wake.stop();
+                    wake.play();
                 }
                 if (now >= root.sessionEnd) {
                     root.finish();

@@ -8,7 +8,7 @@ A fork of [KClock](https://invent.kde.org/utilities/kclock), KDE's clock app, wi
 - a singing bowl that strikes 3 times at the start and 2 times at the end
 - remembers your preparation time and session length
 - follows the system's default audio output, so a Bluetooth speaker connected later works
-- plays an inaudible tone every 10 minutes so a Bluetooth speaker doesn't switch itself off
+- plays a near-silent sound just before the first strike, so a Bluetooth speaker has time to wake up
 
 Built and tested on Debian testing with KDE Plasma 6 on Wayland.
 
@@ -22,7 +22,7 @@ Install KClock's build dependencies (for example with `sudo apt build-dep kclock
 
 ## License and credits
 
-KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The singing bowl recording is CC0 (public domain).
+KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The bowl sound "templeBowl_softAttack_0796" by [joesh2](https://freesound.org/people/joesh2/sounds/718895/) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It was converted to FLAC, shortened and given a faster fade-out.
 
 The Meditation page was created by Stijn, together with Claude, an AI assistant made by Anthropic.
 
