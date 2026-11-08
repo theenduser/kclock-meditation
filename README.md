@@ -22,7 +22,7 @@ Install KClock's build dependencies (for example with `sudo apt build-dep kclock
 
 ## License and credits
 
-KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The bowl sound "templeBowl_softAttack_0796" by [joesh2](https://freesound.org/people/joesh2/sounds/718895/) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It was converted to FLAC, shortened and given a faster fade-out.
+KClock is made by the KDE community, and this fork keeps its license, GPL-2.0-or-later. The bowl sound "templeBowl_softAttack_0796" by [joesh2](https://freesound.org/people/joesh2/sounds/718895/) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It was converted to FLAC, shortened, given a faster fade-out and repeated into strike sequences.
 
 The Meditation page was created by Stijn, together with Claude, an AI assistant made by Anthropic.
 

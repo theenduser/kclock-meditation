@@ -11,23 +11,22 @@ Kirigami.Page {
     title: i18n("Meditate")
 
     property string phase: "idle" // idle | preparing | running
+    property bool paused: false
     property double phaseEnd: 0
     property double sessionStart: 0
     property double sessionEnd: 0
+    property double pausedAt: 0
+    property double msLeft: 0
     property int remaining: 0
     property int sessionMinutes: 20
 
-    // the digits fade out and the enso fades in over this many seconds after the first bell
+    // the digits fade out and the enso fades in over the whole sit
     readonly property real fadeSeconds: sessionMinutes * 60
     property real fade: 0       // 0..1 while sitting
     property bool done: false   // the sit ran to the end: the enso stays visible
     readonly property real ensoOpacity: phase === "running" ? fade : (phase === "idle" && done ? 1 : 0)
 
-    readonly property real ensoSize: Math.max(Kirigami.Units.gridUnit * 7,
-                                              Math.min(Kirigami.Units.gridUnit * 15, root.height * 0.44))
-
-    property bool useFirstPlayer: true
-    property int ringsLeft: 0
+    property bool wakeSent: false
 
     // used by the page-switch animation in Main.qml
     property real yTranslate: 0
@@ -44,39 +43,48 @@ Kirigami.Page {
         return m + ":" + (r < 10 ? "0" : "") + r;
     }
 
-    // play one strike, using the two players in turn so strikes can overlap
-    function playOnce() {
-        const p = useFirstPlayer ? bellA : bellB;
-        useFirstPlayer = !useFirstPlayer;
-        p.stop();
-        p.play();
-    }
-
-    // strike `count` times, 6 seconds apart
-    function ring(count) {
-        playOnce();
-        ringsLeft = count - 1;
-        if (ringsLeft > 0)
-            ringer.restart();
-        else
-            ringer.stop();
-    }
-
     function start() {
-        wakeSent = false;
         fade = 0;
         done = false;
+        paused = false;
+        wakeSent = false;
         phase = "preparing";
         remaining = prepBox.value;
         phaseEnd = Date.now() + prepBox.value * 1000;
         tick.start();
     }
 
-    // Stop button: silence everything
-    function stop() {
+    // freeze the countdown and the enso where they are
+    function pause() {
+        const now = Date.now();
         tick.stop();
-        ringer.stop();
+        pausedAt = now;
+        msLeft = Math.max(0, (phase === "preparing" ? phaseEnd : sessionEnd) - now);
+        paused = true;
+    }
+
+    // carry on from the same point
+    function resume() {
+        const now = Date.now();
+        if (phase === "preparing") {
+            phaseEnd = now + msLeft;
+        } else {
+            sessionEnd = now + msLeft;
+            sessionStart += now - pausedAt;
+        }
+        wakeSent = false;
+        paused = false;
+        tick.start();
+    }
+
+    // back to the start screen, and silence
+    function reset() {
+        tick.stop();
+        startBell.stop();
+        endBell.stop();
+        wake.stop();
         phase = "idle";
+        paused = false;
         done = false;
         fade = 0;
     }
@@ -85,51 +93,39 @@ Kirigami.Page {
     function finish() {
         tick.stop();
         phase = "idle";
+        paused = false;
         done = true;
-        ring(2);
+        endBell.play();
     }
 
     // follows the system default audio output (e.g. a newly connected speaker)
     MediaDevices { id: mediaDevices }
 
+    // the opening strikes and the closing strikes are ready-made sounds, exactly 6 s apart
     MediaPlayer {
-        id: bellA
-        source: Qt.resolvedUrl("bell.flac")
+        id: startBell
+        source: Qt.resolvedUrl("bell_start.flac")
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     MediaPlayer {
-        id: bellB
-        source: Qt.resolvedUrl("bell.flac")
+        id: endBell
+        source: Qt.resolvedUrl("bell_end.flac")
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
     // a near-silent sound wakes the audio output 1.5 s before the first strike
-    property bool wakeSent: false
-
     MediaPlayer {
         id: wake
         source: Qt.resolvedUrl("wake.wav")
         audioOutput: AudioOutput { device: mediaDevices.defaultAudioOutput }
     }
 
-    Timer {
-        id: ringer
-        interval: 6000
-        repeat: true
-        onTriggered: {
-            root.playOnce();
-            root.ringsLeft--;
-            if (root.ringsLeft <= 0)
-                ringer.stop();
-        }
-    }
-
     // drives the cross-fade while sitting
     Timer {
         interval: 100
         repeat: true
-        running: root.phase === "running"
+        running: root.phase === "running" && !root.paused
         onTriggered: root.fade = Math.min(1, (Date.now() - root.sessionStart) / (root.fadeSeconds * 1000))
     }
 
@@ -149,7 +145,7 @@ Kirigami.Page {
                 if (now >= root.phaseEnd) {
                     root.phase = "running";
                     root.wakeSent = false;
-                    root.ring(3);
+                    startBell.play();
                     root.sessionStart = now;
                     root.sessionEnd = now + root.sessionMinutes * 60000;
                     root.remaining = root.sessionMinutes * 60;
@@ -221,7 +217,7 @@ Kirigami.Page {
             Behavior on opacity { NumberAnimation { duration: 400 } }
 
             Repeater {
-                model: [10, 15, 20, 25, 30, 40]
+                model: [10, 15, 20, 25, 30, 35]
                 Controls.Button {
                     Layout.fillWidth: true
                     text: i18n("%1 min", modelData)
@@ -246,9 +242,27 @@ Kirigami.Page {
 
         Controls.Button {
             Layout.alignment: Qt.AlignHCenter
-            icon.name: root.phase === "idle" ? "media-playback-start" : "media-playback-stop"
-            text: root.phase === "idle" ? i18n("Let’s sit!") : i18n("Stop")
-            onClicked: root.phase === "idle" ? root.start() : root.stop()
+            icon.name: (root.phase === "idle" || root.paused) ? "media-playback-start" : "media-playback-pause"
+            text: root.phase === "idle" ? i18n("Let’s sit!") : (root.paused ? i18n("Resume") : i18n("Pause"))
+            onClicked: {
+                if (root.phase === "idle")
+                    root.start();
+                else if (root.paused)
+                    root.resume();
+                else
+                    root.pause();
+            }
+        }
+
+        Controls.Button {
+            Layout.alignment: Qt.AlignHCenter
+            flat: true
+            icon.name: "view-refresh"
+            text: i18n("Reset")
+            enabled: root.phase !== "idle" || root.done
+            opacity: enabled ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 400 } }
+            onClicked: root.reset()
         }
     }
 }
